@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rashid Al-Dazaz — SOC Analyst | DFIR &amp; GRC</title>
+<meta name="description" content="Rashid Al-Dazaz — SOC Analyst L1 specializing in threat detection, incident response, and security operations. Growing toward SOC L2, DFIR, and GRC.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e141c;
+    --panel:#141d28;
+    --panel-2:#101823;
+    --line:#243040;
+    --text:#e7ecf1;
+    --muted:#8b9aac;
+    --muted-2:#5d6c7e;
+    --amber:#e8a33d;
+    --teal:#4fb3c2;
+    --teal-dim:#2c5a63;
+    --radius:2px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    background-attachment:fixed;
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+
+  a{color:var(--teal);}
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--amber);
+    outline-offset:3px;
+  }
+
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* ---------- Top status bar ---------- */
+  .statusbar{
+    border-bottom:1px solid var(--line);
+    background:rgba(14,20,28,0.85);
+    backdrop-filter:blur(6px);
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .statusbar .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 24px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.04em;
+  }
+  .statusbar .brand{color:var(--text); font-weight:600;}
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--amber);
+    border:1px solid var(--teal-dim);
+    padding:4px 10px;
+    border-radius:20px;
+  }
+  .status-pill .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 0 3px rgba(232,163,61,0.15);
+    animation:pulse 2.4s infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .status-pill .dot{animation:none;} }
+  @keyframes pulse{
+    0%,100%{opacity:1;} 50%{opacity:.35;}
+  }
+  .statusbar nav{display:none;}
+  @media (min-width:640px){
+    .statusbar nav{display:flex; gap:18px;}
+    .statusbar nav a{color:var(--muted); text-decoration:none;}
+    .statusbar nav a:hover{color:var(--teal);}
+  }
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    padding:72px 0 56px;
+    border-bottom:1px solid var(--line);
+  }
+  .ticket-id{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted-2);
+    letter-spacing:.08em;
+    margin-bottom:18px;
+  }
+  .ticket-id span{color:var(--teal);}
+  h1{
+    font-size:clamp(34px,6vw,54px);
+    line-height:1.05;
+    margin:0 0 10px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .role-line{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--amber);
+    font-size:15px;
+    margin-bottom:22px;
+  }
+  .lede{
+    max-width:620px;
+    color:var(--muted);
+    font-size:16.5px;
+    margin-bottom:30px;
+  }
+  .hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .hero-meta a{text-decoration:none;}
+  .hero-meta a:hover{text-decoration:underline;}
+  .hero-meta .k{color:var(--muted-2);}
+
+  /* ---------- Log entry sections ---------- */
+  section.entry{
+    padding:52px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .entry-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    color:var(--teal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .entry-tag::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .entry h2{
+    font-size:22px;
+    margin:0 0 18px;
+    font-weight:700;
+  }
+
+  /* summary */
+  .summary-box{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--teal);
+    padding:22px 24px;
+    border-radius:var(--radius);
+    color:var(--text);
+    font-size:16px;
+  }
+
+  /* competencies */
+  .comp-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+  @media (min-width:720px){
+    .comp-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  .comp-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:18px;
+    border-radius:var(--radius);
+  }
+  .comp-card .idx{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted-2);
+    margin-bottom:8px;
+  }
+  .comp-card h3{
+    font-size:14.5px;
+    margin:0 0 10px;
+    color:var(--amber);
+  }
+  .comp-card ul{
+    margin:0;
+    padding-left:16px;
+    color:var(--muted);
+    font-size:13.5px;
+  }
+  .comp-card li{margin-bottom:5px;}
+
+  /* experience timeline */
+  .job{
+    position:relative;
+    padding-left:26px;
+    margin-bottom:34px;
+    border-left:1px solid var(--line);
+  }
+  .job:last-child{margin-bottom:0;}
+  .job::before{
+    content:"";
+    position:absolute;
+    left:-4.5px;
+    top:4px;
+    width:8px;height:8px;
+    background:var(--teal);
+    border-radius:50%;
+  }
+  .job-head{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:6px 16px;
+    margin-bottom:4px;
+  }
+  .job-title{font-weight:600; font-size:16px;}
+  .job-dates{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted-2);
+  }
+  .job-company{color:var(--muted); font-size:14px; margin-bottom:12px;}
+  .job ul{margin:0; padding-left:18px; color:var(--muted); font-size:14.5px;}
+  .job li{margin-bottom:7px;}
+
+  /* certifications */
+  .cert-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:10px;
+  }
+  .cert{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:12px 14px;
+    border-radius:var(--radius);
+    font-size:13.5px;
+  }
+  .cert .yr{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--muted-2);
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+  /* case queue (projects) — honest empty state */
+  .queue-box{
+    background:var(--panel-2);
+    border:1px dashed var(--line);
+    border-radius:var(--radius);
+    padding:30px 24px;
+    text-align:left;
+  }
+  .queue-box .queue-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--amber);
+    margin-bottom:10px;
+  }
+  .queue-box p{
+    color:var(--muted);
+    font-size:14.5px;
+    margin:0 0 6px;
+    max-width:560px;
+  }
+  .queue-box .sub{color:var(--muted-2); font-size:13px;}
+
+  /* footer / contact */
+  footer{
+    padding:56px 0 60px;
+  }
+  .contact-title{
+    font-size:26px;
+    font-weight:700;
+    margin:0 0 14px;
+  }
+  .contact-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:18px;
+  }
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    text-decoration:none;
+    padding:12px 18px;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    color:var(--text);
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .btn.primary{
+    border-color:var(--teal-dim);
+    color:var(--teal);
+  }
+  .btn:hover{border-color:var(--amber); color:var(--amber);}
+  .foot-note{
+    margin-top:40px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--muted-2);
+  }
+
+  .fade-in{
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .fade-in.visible{opacity:1; transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .fade-in{opacity:1; transform:none; transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="statusbar">
+  <div class="wrap">
+    <span class="brand mono">R.ALDAZAZ</span>
+    <nav>
+      <a href="#summary">Summary</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#certs">Certifications</a>
+      <a href="#queue">Case Queue</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <span class="status-pill"><span class="dot"></span>ACTIVE — OPEN TO OPPORTUNITIES</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="ticket-id">CASE <span>#SOC-ANALYST</span> · FILED BY RASHID AL-DAZAZ · STATUS <span>OPEN</span></div>
+    <h1>Rashid Al-Dazaz</h1>
+    <div class="role-line">SOC Analyst L1 — Threat Detection &amp; Incident Response — Aspiring SOC L2 / DFIR / GRC</div>
+    <p class="lede">I monitor, triage, and investigate security events across SIEM, EDR, and NDR platforms — and I'm building toward deeper forensic investigation and governance &amp; risk work.</p>
+    <div class="hero-meta">
+      <span><span class="k">LOCATION</span> Riyadh, Saudi Arabia</span>
+      <a href="mailto:dazazrashid@gmail.com"><span class="k">EMAIL</span> dazazrashid@gmail.com</a>
+      <a href="https://www.linkedin.com/in/rashid-al-dazaz-3b23082b7" target="_blank" rel="noopener"><span class="k">LINKEDIN</span> /in/rashid-al-dazaz</a>
+    </div>
+  </div>
+</header>
+
+<section class="entry fade-in" id="summary">
+  <div class="wrap">
+    <div class="entry-tag">[ 01 · SUMMARY ]</div>
+    <h2>Profile</h2>
+    <div class="summary-box">
+      SOC Analyst L1 with 1.5+ years of hands-on experience in real-time threat monitoring, alert triage, and incident response across SIEM (Splunk), EDR, and NDR platforms. Skilled in log analysis, IOC correlation, phishing investigation, and structured incident documentation, with working knowledge of digital forensics fundamentals and risk &amp; compliance frameworks (NCA ECC, ISO 27001, NIST CSF). Currently growing toward SOC L2, DFIR, and GRC roles.
+    </div>
+  </div>
+</section>
+
+<section class="entry fade-in" id="skills">
+  <div class="wrap">
+    <div class="entry-tag">[ 02 · CORE COMPETENCIES ]</div>
+    <h2>Areas of Focus</h2>
+    <div class="comp-grid">
+      <div class="comp-card">
+        <div class="idx">TRACK A</div>
+        <h3>SOC / Threat Detection &amp; Response</h3>
+        <ul>
+          <li>SIEM monitoring (Splunk)</li>
+          <li>Alert triage &amp; escalation</li>
+          <li>EDR / NDR investigation</li>
+          <li>IOC correlation &amp; threat hunting</li>
+          <li>Incident containment</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="idx">TRACK B</div>
+        <h3>Digital Forensics &amp; Incident Response</h3>
+        <ul>
+          <li>Incident documentation &amp; timeline reconstruction</li>
+          <li>Evidence &amp; chain-of-custody awareness</li>
+          <li>Endpoint &amp; network telemetry analysis</li>
+          <li>Root cause analysis</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <div class="idx">TRACK C</div>
+        <h3>Governance, Risk &amp; Compliance</h3>
+        <ul>
+          <li>Security policy &amp; procedure support</li>
+          <li>Risk identification &amp; assessment</li>
+          <li>NCA ECC · ISO 27001 · NIST CSF</li>
+          <li>Security awareness &amp; reporting</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="entry fade-in" id="experience">
+  <div class="wrap">
+    <div class="entry-tag">[ 03 · EXPERIENCE LOG ]</div>
+    <h2>Experience</h2>
+
+    <div class="job">
+      <div class="job-head">
+        <span class="job-title">SOC Analyst L1</span>
+        <span class="job-dates">NOV 2025 — PRESENT</span>
+      </div>
+      <div class="job-company">SITE — Saudi Information Technology Company</div>
+      <ul>
+        <li>Monitor and analyze security events in real time using SIEM, EDR, NDR, and log correlation tools.</li>
+        <li>Triage and prioritize alerts by severity and threat level, filtering false positives.</li>
+        <li>Conduct initial investigations using endpoint telemetry, network flow analysis, and IOC matching.</li>
+        <li>Execute containment actions — host isolation and malicious IP blocking.</li>
+        <li>Escalate critical incidents to SOC L2 with structured, DFIR-ready documentation.</li>
+      </ul>
+    </div>
+
+    <div class="job">
+      <div class="job-head">
+        <span class="job-title">SOC L1 Analyst</span>
+        <span class="job-dates">SEP 2024 — OCT 2025</span>
+      </div>
+      <div class="job-company">Tamkeen Technology Company, Riyadh</div>
+      <ul>
+        <li>Monitored Splunk SIEM alerts, endpoint logs, and network activity across a 24/7 SOC environment.</li>
+        <li>Performed alert triage and validated phishing, malware, and network attack events.</li>
+        <li>Executed initial containment measures and escalated complex incidents to SOC L2/L3.</li>
+        <li>Documented incidents and supported daily SOC reporting for compliance review.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="entry fade-in" id="certs">
+  <div class="wrap">
+    <div class="entry-tag">[ 04 · CERTIFICATIONS ]</div>
+    <h2>Certifications</h2>
+    <div class="cert-grid">
+      <div class="cert"><span>OffSec Defensive Analyst (OSDA)</span><span class="yr">2026</span></div>
+      <div class="cert"><span>eLearnSecurity Cert. Incident Responder (eCIR)</span><span class="yr">2024</span></div>
+      <div class="cert"><span>CompTIA CySA+</span><span class="yr">2024</span></div>
+      <div class="cert"><span>CompTIA CSAP</span><span class="yr">2024</span></div>
+      <div class="cert"><span>Cisco CCNA</span><span class="yr">2024</span></div>
+      <div class="cert"><span>CompTIA Security+</span><span class="yr">2021</span></div>
+      <div class="cert"><span>CyberPro+ Program</span><span class="yr">2021</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="entry fade-in" id="queue">
+  <div class="wrap">
+    <div class="entry-tag">[ 05 · CASE QUEUE ]</div>
+    <h2>Write-ups &amp; Projects</h2>
+    <div class="queue-box">
+      <div class="queue-status">◌ QUEUE STATUS — 0 CASES FILED</div>
+      <p>This section is reserved for DFIR write-ups, SIEM home-lab builds, and GRC deliverables (risk registers, policy templates) as they're completed.</p>
+      <p class="sub">Check back soon — new case files in progress.</p>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="entry-tag">[ 06 · CONTACT ]</div>
+    <div class="contact-title">Let's talk security operations.</div>
+    <p style="color:var(--muted); max-width:520px;">Open to SOC L2, DFIR, and GRC opportunities in Riyadh and remote-friendly teams across Saudi Arabia.</p>
+    <div class="contact-row">
+      <a class="btn primary" href="mailto:dazazrashid@gmail.com">Email me</a>
+      <a class="btn" href="https://www.linkedin.com/in/rashid-al-dazaz-3b23082b7" target="_blank" rel="noopener">LinkedIn profile</a>
+    </div>
+    <div class="foot-note">© 2026 Rashid Al-Dazaz · Riyadh, Saudi Arabia</div>
+  </div>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.fade-in');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(el => io.observe(el));
+  } else {
+    els.forEach(el => el.classList.add('visible'));
+  }
+</script>
+
+</body>
+</html>
